@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LIPS Scheme REPL</title>
+    <script src="https://cdn.jsdelivr.net/gh/jcubic/lips@devel/dist/lips.js"></script>
+  </head>
+  <body>
+    <script type="text/x-scheme">
+      (let-env lips.env.__parent__
+       (load "https://cdn.jsdelivr.net/npm/@jcubic/lips@beta/dist/std.xcb"))
+    </script>
+    <script type="text/x-scheme">
+      (define (geiser:eval module form . rest)
+       (let* ((output (open-output-string))
+              (result (call-with-port output
+                       (lambda (p) (eval form)))))
+
+        (format "~s"
+         `((result ,(format "~s" result))
+           (output . ,(get-output-string output))))))
+    </script>
+    <script>
+      const ws = new WebSocket('ws://localhost:1338')
+
+      ws.onopen = () => {
+        console.log('Connected to the server')
+      }
+
+      ws.onmessage = event => {
+        const code = event.data
+        lips
+          .exec(code)
+          .then(results => {
+            const output = results.map(result => (result ? result.toString() : '')).join('\n')
+            ws.send(output)
+          })
+          .catch(e => {
+            ws.send('Error: ' + e.message)
+          })
+      }
+
+      ws.onclose = () => {
+        console.log('Disconnected from the server')
+      }
+
+      ws.onerror = error => {
+        console.error('WebSocket error:', error)
+      }
+    </script>
+  </body>
+</html>
