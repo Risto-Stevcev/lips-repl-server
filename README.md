@@ -19,4 +19,4 @@ node repl_server.js
 - Create a `geiser-lips` package, copying from
   [geiser-chibi](https://gitlab.com/emacs-geiser/chibi/-/blob/master/geiser-chibi.el)
   - Low priority since right now it works if you use `geiser-chibi` and just
-    stick to only using eval
+    stick to only using eval (`geiser-eval-buffer`, `geiser-eval-region`, `geiser-eval-last-sexp`)
